@@ -56,6 +56,25 @@ def save():
             password_entry.delete(0, END)
 
 
+# ---------------------------- FIND PASSWORD ------------------------------- #
+
+
+def find_password():
+    try:
+        with open("data.json", "r") as file:
+            data = json.load(file)
+    except FileNotFoundError:
+        messagebox.showerror(title="Error", message="No Data File Found")
+    else:
+        site = site_entry.get()
+        if site in data:
+            user = data[site]["user"]
+            password = data[site]["password"]
+            messagebox.showinfo(title=site, message=f"User: {user} \nPassword: {password}")
+        else:
+            messagebox.showwarning(title="Warning", message=f"No details for the website '{site}' exists")
+
+
 # ---------------------------- UI SETUP ------------------------------- #
 window = Tk()
 window.title("Password Manager")
@@ -76,10 +95,10 @@ password_label = Label(text="Password:")
 password_label.grid(column=0, row=3)
 
 # Entries
-site_entry = Entry(width=51)
-site_entry.grid(column=1, row=1, columnspan=2)
+site_entry = Entry(width=33)
+site_entry.grid(column=1, row=1)
 site_entry.focus()
-user_entry = Entry(width=51)
+user_entry = Entry(width=53)
 user_entry.grid(column=1, row=2, columnspan=2)
 user_entry.insert(0, "ionme")
 password_entry = Entry(width=33)
@@ -88,8 +107,10 @@ password_entry.grid(column=1, row=3)
 # Buttons
 password_button = Button(text="Generate Password", command=generate_password)
 password_button.grid(column=2, row=3)
-add_button = Button(text="Add", width=40, command=save)
+add_button = Button(text="Add", width=45, command=save)
 add_button.grid(column=1, row=4, columnspan=2)
+search_button = Button(text="Search", width=15, command=find_password)
+search_button.grid(column=2, row=1)
 
 
 window.mainloop()
