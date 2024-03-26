@@ -1,6 +1,7 @@
 from tkinter import *
 from tkinter import messagebox
 from random import shuffle, randint, choice
+import json
 
 
 # ---------------------------- PASSWORD GENERATOR ------------------------------- #
@@ -23,23 +24,36 @@ def generate_password():
 # ---------------------------- SAVE PASSWORD ------------------------------- #
 
 
+def save_json(data):
+    with open("data.json", 'w') as file:
+        json.dump(data, file, indent=4)  # Saving updated data
+
+
 def save():
     site = site_entry.get()
     user = user_entry.get()
     password = password_entry.get()
+    new_data = {
+        site: {
+            "user": user,
+            "password": password,
+        }
+    }
+
     if len(site) == 0 or len(password) == 0:
         messagebox.showwarning(title="Oops", message="Please don't leave any fields empty")
     else:
-        result = f"{site} | {user} | {password} \n"
-        is_ok = messagebox.askokcancel(title=site, message=f"There are the details entered: "
-                                                           f"\nUser: {user} "
-                                                           f"\nPassword: {password} "
-                                                           f"\nIs it ok to save?")
-        if is_ok:
-            with open("data.txt", 'a') as file:
-                file.write(result)
-                site_entry.delete(0, END)
-                password_entry.delete(0, END)
+        try:
+            with open("data.json", 'r') as file:
+                data = json.load(file)  # Reading old data
+        except FileNotFoundError:
+            save_json(new_data)
+        else:
+            data.update(new_data)  # Updating old data with new data
+            save_json(data)
+        finally:
+            site_entry.delete(0, END)
+            password_entry.delete(0, END)
 
 
 # ---------------------------- UI SETUP ------------------------------- #
